@@ -1,0 +1,14 @@
+% program   : RTKPOST ver.2.4.2
+% inp file  : D:\Repository\glnephexercise\logs\BINR.obs
+% inp file  : D:\Repository\glnephexercise\logs\BINR.gnav
+% obs start : 2020/02/10 13:37:47.0 GPST (week2092 135467.0s)
+% obs end   : 2020/02/10 13:40:37.0 GPST (week2092 135637.0s)
+% pos mode  : single
+% elev mask : 15.0 deg
+% ionos opt : broadcast
+% tropo opt : saastamoinen
+% ephemeris : broadcast
+% navi sys  : glonass
+%
+% (lat/lon/height=WGS84/ellipsoidal,Q=1:fix,2:float,3:sbas,4:dgps,5:single,6:ppp,ns=# of satellites)
+%  GPST                  latitude(deg) longitude(deg)  height(m)   Q  ns   sdn(m)   sde(m)   sdu(m)  sdne(m)  sdeu(m)  sdun(m) age(s)  ratio
