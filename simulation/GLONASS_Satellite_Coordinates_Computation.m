@@ -62,18 +62,19 @@ JZ0ms = AZ;
         
 %% Интегрирование численным методом
 Toe = 12*60*60;
-Tof = 24*60*60;
-Ts = 0.1;
+Tof = 18*60*60;
+Ts = 1;
 
 ti = tb:Ts:Tof;
 
-%F0 = [X0 Y0 Z0 VX0 VY0 VZ0]; % Начальные условия
-F0(1,:) = [X0 Y0 Z0 JX0ms JY0ms JZ0ms]; % Начальные условия
+F0 = [X0 Y0 Z0 VX0 VY0 VZ0]; % Начальные условия
+%F0 = [X0 Y0 Z0 JX0ms JY0ms JZ0ms]; % Начальные условия
 
-%for k = 1:length(ti+1)
-    [t, F] = ode45('diffs', ti, F0(1,:));
-    %F0(k+1,:) = F(k+1,:);
-%end
+for k = 1:length(ti+1)
+    F1(k,:) = F0;
+    [t, F] = ode45('diffs', 0:1, F0);
+    F0 = F(2,:);
+end
 
 R_Earth = 6371e3;
 
@@ -82,13 +83,13 @@ R_Earth = 6371e3;
 surf(Xz*R_Earth,Yz*R_Earth,Zz*R_Earth)
 hold on
 grid on
-plot3(F(:,1), F(:,2), F(:,3), 'b')
+plot3(F1(:,1), F1(:,2), F1(:,3), 'b')
 xlabel('Ось Х, м');
 ylabel('Ось Y, м');
 zlabel('Ось Z, м');
 
-figure
-plot(t,F(:,1))
+%figure
+%plot(t,F(:,1))
 
 
 
