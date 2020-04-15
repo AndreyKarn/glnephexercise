@@ -2,135 +2,93 @@ clear all; close all; tic; clc;
 format long;
 
 %% Заданные параметры
-% Ephemerides reference epoch:
+% Эфемериды на заданную  эпоху:
 % 2020/02/25 13:45:18
-Te = 18 + 45*60 + 13*60*60; % 49518 s
+Time_year = 2020;
+Time_month = 2;
+Time_day = 25;
+Time_hour = 13;
+Time_minutes = 45;
+Time_seconds = 18;
 
-% Coordinate at Te in PZ-90:
-X = -8444572.27; % m
-Y = -8664957.52; % m
-Z = 22466454.10; % m
+% Координаты на Te в системе ПЗ-90, [м]:
+X = -8444572.27;
+F = -8664957.52;
+Z = 22466454.10;
 
-% Velocity component at Te in PZ-90:
-VX = 2983.60348; % m/s
-VY = -743.76965; % m/s
-VZ =  832.83615; % m/s
+% Компоненты вектора скорости на Te в системе ПЗ-90, [м/с]:
+VX = 2983.60348;
+VY = -743.76965;
+VZ =  832.83615;
 
-% Moon and sun acceleration at Te:
-AX = -0.0000028; % m/s2
-AY =  0.0000019; % m/s2
-AZ = -0.0000019; % m/s2
+% Ускорения лунно-солнечные на Te в системе ПЗ-90, [м/с2]:
+AX = -0.0000028;
+AY =  0.0000019;
+AZ = -0.0000019;
 
-% SV clock offset:
-Tau = -44762.2; % ns
-% SV relative frequency offset:
-Gamma = 0.0009; % ns/s
+% SV временное смещение, [нс]:
+Tau = -44762.2;
+% SV относительное смещение частоты, [нс/с]:
+Gamma = 0.0009;
 
-%% 1. Coordinates transformation to an inertial reference frame:
-% earth's rotation rate:
-Omega_E = 0.7292115e-4; % rad/s
+%% Расчет времени формата ГЛОНАСС
+N4 = floor((Time_year-1996)/4) + 1; % Номер четырехлетнего интервала
+NT = 365*(Time_year-1996-4*(N4-1)) + 31 + Time_day + 1; % Номер суток в четырехлетнем интервале
+tb = Time_seconds + Time_minutes*60 + Time_hour*60*60 + 10800;
 
-%Xa_i = nan(size(900));
+% Расчет среднего звездного времени по Гринвичу
+GMST = GMST_calc( N4,NT );
 
+%% Пересчет координат и оставляющих вектора скорости центра масс НКА в связанной с Землей системе координат ПЗ-90
+% средняя угловая скорость вращения Земли относительно точки весеннего равноденствия, [рад/с]:
+Omega_E = 7.2921151467e-5;
+
+Theta_Ge = GMST + Omega_E * (tb - 3 * 60 * 60);
+
+% Координаты:
+X0 = X * cos(Theta_Ge) - F * sin(Theta_Ge);
+Y0 = X * sin(Theta_Ge) + F * cos(Theta_Ge);
+Z0 = Z;
+
+% Скорости:
+VX0 = VX * cos(Theta_Ge) - VY * sin(Theta_Ge) - Omega_E * Y0;
+VY0 = VX * sin(Theta_Ge) + VY * cos(Theta_Ge) + Omega_E * X0;
+VZ0 = VZ;
+
+% Ускорения:
+JX0ms = AX * cos(Theta_Ge) - AY * sin(Theta_Ge);
+JY0ms = AX * sin(Theta_Ge) + AY * cos(Theta_Ge);
+JZ0ms = AZ;
+        
+%% Интегрирование численным методом
 Toe = 12*60*60;
 Tof = 24*60*60;
+Ts = 0.1;
 
-for k = Toe:Tof
-    
-    % the sidereal time in Greenwich at midnight GMT of a date at which the
-    % epoch Te is specified:
-    Theta_G0 = k;
-    % the sidereal time at epoch Te, to which are referred the initial
-    % conditions, in Greenwich meridian:
-    Theta_Ge = Theta_G0 + Omega_E * (Te - 3 * 60 * 60);
-    
-    if k == Toe
-        % Position:
-        Xa = X * cos(Theta_Ge) - Y * sin(Theta_Ge);
-        Ya = X * sin(Theta_Ge) + Y * cos(Theta_Ge);
-        Za = Z;
-        
-        % Velocity:
-        VXa = VX * cos(Theta_Ge) - VY * sin(Theta_Ge) - Omega_E * Ya;
-        VYa = VX * sin(Theta_Ge) + VY * cos(Theta_Ge) + Omega_E * Xa;
-        VZa = VZ;
-        
-        % Accelerations:
-        JXams = AX * cos(Theta_Ge) - AY * sin(Theta_Ge);
-        JYams = AX * sin(Theta_Ge) + AY * cos(Theta_Ge);
-        JZams = AZ;
-    else
-        % Position:
-        Xa = X * cos(Theta_Ge) - Y * sin(Theta_Ge);
-        Ya = X * sin(Theta_Ge) + Y * cos(Theta_Ge);
-        Za = Z;
-        
-        % Velocity:
-        VXa = VXa + dXadt;
-        VYa = VYa + dYadt;
-        VZa = VZa + dZadt;
-        
-        %Accelerations:
-        JXams = JXams + dVXadt;
-        JYams = JYams + dVYadt;
-        JZams = JZams + dVZadt;
-    end
-    %% 2. Numerical integration of differential equations that describe the motion of the satellites.
-    % Equatorial radius of the Earth (PZ-90):
-    aE = 6378.136; % km
-    
-    % Gravitational constant (PZ-90):
-    Mu = 398600.44; % km^3/s^2
-    
-    % Second zonal coefficient of spherical harmonic expression:
-    C20 = -1082.63e-6; %
-    
-    r = sqrt(Xa^2 + Ya^2 + Za^2);
-    
-    Mu_norm = Mu / (r^2);
-    Xa_norm = Xa / r;
-    Ya_norm = Ya / r;
-    Za_norm = Za / r;
-    Xa_norm = Xa / r;
-    Rho = aE / r;
-    
-    dXadt = VXa;
-    dYadt = VYa;
-    dZadt = VZa;
-    
-    dVXadt = - Mu_norm * Xa_norm ...
-        + 3/2 * C20 * Mu_norm * Xa_norm * Rho^2 * (1 - 5 * Za_norm^2)...
-        + JXams;
-    dVYadt = - Mu_norm * Ya_norm ...
-        + 3/2 * C20 * Mu_norm * Ya_norm * Rho^2 * (1 - 5 * Za_norm^2)...
-        + JYams;
-    dVZadt = - Mu_norm * Za_norm ...
-        + 3/2 * C20 * Mu_norm * Za_norm * Rho^2 * (3 - 5 * Za_norm^2)...
-        + JZams;
-    
-    Xm(k-Toe+1) = Xa;
-    Ym(k-Toe+1) = Ya;
-    Zm(k-Toe+1) = Za;
-end
+ti = tb:Ts:Tof;
 
-T = Toe:Tof;
+%F0 = [X0 Y0 Z0 VX0 VY0 VZ0]; % Начальные условия
+F0(1,:) = [X0 Y0 Z0 JX0ms JY0ms JZ0ms]; % Начальные условия
+
+%for k = 1:length(ti+1)
+    [t, F] = ode45('diffs', ti, F0(1,:));
+    %F0(k+1,:) = F(k+1,:);
+%end
+
 R_Earth = 6371e3;
 
 %% построение графиков
-[X,Y,Z] = sphere(30);
-surf(X*R_Earth,Y*R_Earth,Z*R_Earth)
+[Xz,Yz,Zz] = sphere(30);
+surf(Xz*R_Earth,Yz*R_Earth,Zz*R_Earth)
 hold on
 grid on
-plot3(Xm, Ym, Zm, 'b')
+plot3(F(:,1), F(:,2), F(:,3), 'b')
+xlabel('Ось Х, м');
+ylabel('Ось Y, м');
+zlabel('Ось Z, м');
 
-
-
-
-
-
-
-
-
+figure
+plot(t,F(:,1))
 
 
 
