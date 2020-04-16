@@ -16,9 +16,9 @@ crdY0 = crdY / r;
 crdZ0 = crdZ / r;
 
 dF = F(:);
-dF(1) = F(1);
-dF(2) = F(2);
-dF(3) = F(3);
+dF(1) = F(4);
+dF(2) = F(5);
+dF(3) = F(6);
 
 dF(4) = - GM0 * crdX0 - 3/2 * J02 * GM0 * crdX0 * Rho^2 * (1 - 5 * crdZ0^2);
 dF(5) = - GM0 * crdY0 - 3/2 * J02 * GM0 * crdY0 * Rho^2 * (1 - 5 * crdZ0^2);
