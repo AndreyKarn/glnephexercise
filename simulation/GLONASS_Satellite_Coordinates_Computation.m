@@ -81,18 +81,18 @@ R_inrt_max = max(R_inrt);
 R_inrt_min = min(R_inrt);
 
 %% Учет ускорений
-% tau = t1 - tb;
-% deltaX = F1(:,4).*(tau.^2)/2;
-% deltaY = F1(:,5).*(tau.^2)/2;
-% deltaZ = F1(:,6).*(tau.^2)/2;
-% 
-% deltaVX = F1(:,4).*tau;
-% deltaVY = F1(:,5).*tau;
-% deltaVZ = F1(:,6).*tau;
-% 
-% delta = [deltaX deltaY deltaZ deltaVX deltaVY deltaVZ];
-% 
-% F1 = F1 + delta;
+ tau = t1 - tb;
+deltaX = JX0ms*(tau.^2)/2;
+deltaY = JY0ms*(tau.^2)/2;
+deltaZ = JZ0ms*(tau.^2)/2;
+
+deltaVX = JX0ms*tau;
+deltaVY = JY0ms*tau;
+deltaVZ = JZ0ms*tau;
+
+delta = [deltaX deltaY deltaZ deltaVX deltaVY deltaVZ];
+
+F1 = F1 + delta;
 
 %% Пересчет координат центра масс НКА в систему координат ПЗ-90
 Theta_Ge = GMST + Omega_E * (t1 - 3 * 60 * 60);
@@ -147,8 +147,8 @@ for i = 1:length(crd_WGS_84(:,1))
     
     [X(i) Y(i) Z(i)] = ecef2enu(crd_WGS_84(i,1),crd_WGS_84(i,2),crd_WGS_84(i,3),N,E,H,wgs84Ellipsoid,'radians');
     if Z(i) > 0
-        teta(i) = atan2(sqrt(Z(i)^2 + Y(i)^2),Z(i));
         r(i) = sqrt(X(i)^2 + Y(i)^2 + Z(i)^2);
+        teta(i) = acos(Z(i)/r(i));
         phi(i) = atan2(Y(i),X(i));
     else teta(i) = NaN;
         r(i) = NaN;
@@ -198,7 +198,7 @@ hold off
 
 % Скайплот
 figure(4);
-polar(phi,(teta*180-pi)/pi,'r')
+polarplot(phi,teta*180/pi,'r')
 title('SkyPlot КА №5 ГЛОНАСС')
 
 
