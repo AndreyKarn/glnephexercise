@@ -69,12 +69,30 @@ ti = Toe:Ts:Tof;
 
 F0 = [X0 Y0 Z0 VX0 VY0 VZ0]; % Начальные условия
 
-[t, F] = ode45('diffs', tb:-Ts:ti(1), F0);
+[t, F] = ode45('diffs', tb:-Ts:ti(1), F0); % Метод Рунге-Кутта 4-го порядка
 F1 = F(end:-1:2,:);
 t1 = t(end:-1:2,:);
-[t, F] = ode45('diffs', tb:Ts:ti(end), F0);
+[t, F] = ode45('diffs', tb:Ts:ti(end), F0); % Метод Рунге-Кутта 4-го порядка
 F1 = [F1; F];
 t1 = [t1; t];
+
+R_inrt = sqrt(F1(:,1).^2 + F1(:,2).^2 + F1(:,3).^2);
+R_inrt_max = max(R_inrt);
+R_inrt_min = min(R_inrt);
+
+%% Учет ускорений
+% tau = t1 - tb;
+% deltaX = F1(:,4).*(tau.^2)/2;
+% deltaY = F1(:,5).*(tau.^2)/2;
+% deltaZ = F1(:,6).*(tau.^2)/2;
+% 
+% deltaVX = F1(:,4).*tau;
+% deltaVY = F1(:,5).*tau;
+% deltaVZ = F1(:,6).*tau;
+% 
+% delta = [deltaX deltaY deltaZ deltaVX deltaVY deltaVZ];
+% 
+% F1 = F1 + delta;
 
 %% Пересчет координат центра масс НКА в систему координат ПЗ-90
 Theta_Ge = GMST + Omega_E * (t1 - 3 * 60 * 60);
@@ -83,6 +101,10 @@ Theta_Ge = GMST + Omega_E * (t1 - 3 * 60 * 60);
 crd_PZ90(:,1) =  F1(:,1).*cos(Theta_Ge) + F1(:,2).*sin(Theta_Ge);
 crd_PZ90(:,2) = -F1(:,1).*sin(Theta_Ge) + F1(:,2).*cos(Theta_Ge);
 crd_PZ90(:,3) =  F1(:,3);
+
+R_PZ90 = sqrt(crd_PZ90(:,1).^2 + crd_PZ90(:,2).^2 + crd_PZ90(:,3).^2);
+R_PZ90_max = max(R_PZ90);
+R_PZ90_min = min(R_PZ90);
 
 %% Пересчет координат центра масс НКА в систему координат WGS-84
 ppb = 1e-9;
@@ -99,6 +121,10 @@ for i = 1:length(crd_WGS_84(1,:))
 end
 
 crd_WGS_84 = crd_WGS_84.'; % Переход к вектору-строки
+
+R_WGS_84 = sqrt(crd_WGS_84(:,1).^2 + crd_WGS_84(:,2).^2 + crd_WGS_84(:,3).^2);
+R_WGS_84_max = max(R_WGS_84);
+R_WGS_84_min = min(R_WGS_84);
 
 %% Географические координаты корпуса Е и их перевод в систему WGS-84
 N_gr = 55;
@@ -174,6 +200,7 @@ hold off
 figure(4);
 polar(phi,(teta*180-pi)/pi,'r')
 title('SkyPlot КА №5 ГЛОНАСС')
+
 
 
 
