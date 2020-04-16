@@ -81,7 +81,7 @@ R_inrt_max = max(R_inrt);
 R_inrt_min = min(R_inrt);
 
 %% Учет ускорений
- tau = t1 - tb;
+tau = t1 - tb;
 deltaX = JX0ms*(tau.^2)/2;
 deltaY = JY0ms*(tau.^2)/2;
 deltaZ = JZ0ms*(tau.^2)/2;
@@ -205,7 +205,10 @@ hold off
 
 % Скайплот
 figure(4);
-polarplot(phi,teta*180/pi,'r')
+ax = polaraxes;
+polarplot(ax,phi,teta*180/pi,'r')
+ax.ThetaDir = 'clockwise';
+ax.ThetaZeroLocation = 'top';
 title('SkyPlot КА №5 ГЛОНАСС')
 
 
