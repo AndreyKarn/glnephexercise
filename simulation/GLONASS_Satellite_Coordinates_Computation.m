@@ -149,7 +149,14 @@ for i = 1:length(crd_WGS_84(:,1))
     if Z(i) > 0
         r(i) = sqrt(X(i)^2 + Y(i)^2 + Z(i)^2);
         teta(i) = acos(Z(i)/r(i));
-        phi(i) = atan2(Y(i),X(i));
+        %phi(i) = atan2(Y(i),X(i));
+        if X(i) > 0
+            phi(i) = -atan(Y(i)/X(i))+pi/2;
+        elseif (X(i)<0)&&(Y(i)>0)
+            phi(i) = -atan(Y(i)/X(i))+3*pi/2;
+        elseif (X(i)<0)&&(Y(i)<0)
+            phi(i) = -atan(Y(i)/X(i))-pi/2;
+        end
     else teta(i) = NaN;
         r(i) = NaN;
         phi(i) = NaN;
