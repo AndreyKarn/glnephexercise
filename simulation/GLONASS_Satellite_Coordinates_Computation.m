@@ -149,6 +149,7 @@ for i = 1:length(crd_WGS_84(:,1))
     if Z(i) > 0
         r(i) = sqrt(X(i)^2 + Y(i)^2 + Z(i)^2);
         teta(i) = acos(Z(i)/r(i));
+        %teta(i) = atan2(sqrt(X(i)^2 + Y(i)^2),Z(i));
         %phi(i) = atan2(Y(i),X(i));
         if X(i) > 0
             phi(i) = -atan(Y(i)/X(i))+pi/2;
@@ -167,17 +168,19 @@ end
 R_Earth = 6371e3;
 [Xz,Yz,Zz] = sphere(30);
 
-% Инерциальная СК
+% Инерциальная СК и ПЗ-90
 figure(1)
 surf(Xz*R_Earth,Yz*R_Earth,Zz*R_Earth)
 hold on
 grid on
+plot3(crd_PZ90(:,1), crd_PZ90(:,2), crd_PZ90(:,3), 'r')
 plot3(F1(:,1), F1(:,2), F1(:,3), 'b')
-title({'Траектория движения КА №5 ГЛОНАСС,' ; 'в инерциальной системе координат'})
+title('Траектория движения спутника ГЛОНАСС №5')
 xlabel('Ось Х, м')
 ylabel('Ось Y, м')
 zlabel('Ось Z, м')
 hold off
+legend('Земля','ПЗ-90', 'Инерциальная СК');
 
 % СК ПЗ-90
 figure(2)
@@ -209,10 +212,15 @@ ax = polaraxes;
 polarplot(ax,phi,teta*180/pi,'r')
 ax.ThetaDir = 'clockwise';
 ax.ThetaZeroLocation = 'top';
-title('SkyPlot КА №5 ГЛОНАСС')
+title('SkyView спутника ГЛОНАСС №5')
 
+th = hours(t1/60/60-3);
 
-
-
-
+figure(5);
+grid on
+hold on
+plot(th,(-teta)*180/pi+90,'DurationTickFormat','hh:mm:ss')
+title('Угол места')
+xlabel('Время в МДВ')
+ylabel('Угол места, град')
 
