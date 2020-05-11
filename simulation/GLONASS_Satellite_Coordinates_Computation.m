@@ -13,7 +13,7 @@ Time_seconds = 18;
 
 % Координаты на Te в системе ПЗ-90, [м]:
 X = -8444572.27;
-F = -8664957.52;
+Y = -8664957.52;
 Z = 22466454.10;
 
 % Компоненты вектора скорости на Te в системе ПЗ-90, [м/с]:
@@ -46,8 +46,8 @@ Omega_E = 7.2921151467e-5;
 Theta_Ge = GMST + Omega_E * (tb - 3 * 60 * 60);
 
 % Координаты:
-X0 = X * cos(Theta_Ge) - F * sin(Theta_Ge);
-Y0 = X * sin(Theta_Ge) + F * cos(Theta_Ge);
+X0 = X * cos(Theta_Ge) - Y * sin(Theta_Ge);
+Y0 = X * sin(Theta_Ge) + Y * cos(Theta_Ge);
 Z0 = Z;
 
 % Скорости:
@@ -69,11 +69,11 @@ ti = Toe:Ts:Tof;
 
 F0 = [X0 Y0 Z0 VX0 VY0 VZ0]; % Начальные условия
 
-[t, F] = ode45('diffs', tb:-Ts:ti(1), F0); % Метод Рунге-Кутта 4-го порядка
-F1 = F(end:-1:2,:);
+[t, Y] = ode45('diffs', tb:-Ts:ti(1), F0); % Метод Рунге-Кутта 4-го порядка
+F1 = Y(end:-1:2,:);
 t1 = t(end:-1:2,:);
-[t, F] = ode45('diffs', tb:Ts:ti(end), F0); % Метод Рунге-Кутта 4-го порядка
-F1 = [F1; F];
+[t, Y] = ode45('diffs', tb:Ts:ti(end), F0); % Метод Рунге-Кутта 4-го порядка
+F1 = [F1; Y];
 t1 = [t1; t];
 
 R_inrt = sqrt(F1(:,1).^2 + F1(:,2).^2 + F1(:,3).^2);

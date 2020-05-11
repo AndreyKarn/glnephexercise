@@ -27,4 +27,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     include/libglnsvpos/glnsvpos.h \
     include/libglnsvpos/rungekutta.h \
-    include/libglnsvpos/students.h
+    include/libglnsvpos/structures.h

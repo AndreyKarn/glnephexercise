@@ -3,7 +3,7 @@
 
 #include "include/libglnsvpos/glnsvpos.h"
 #include "include/libglnsvpos/rungekutta.h"
-#include "include/libglnsvpos/students.h"
+#include "include/libglnsvpos/structures.h"
 
 using namespace std;
 
@@ -40,7 +40,9 @@ int main(int argc, char *argv[])
     Eph.NT = 365*(Time_year-1996-4*(Eph.N4-1)) + 31 + Time_day + 1; // BUG Сделать нормально учет месяца
     Eph.tb = Time_seconds + Time_minutes*60 + Time_hour*60*60 + 10800;
 
+    double GMST = GMST_calc( Eph.N4, Eph.NT);
 
+    Ephemeris Eph0 = CrdTrnsf2Inertial(Eph, GMST);
 
     cout << "add(2,2) = " << add(2,2) << "\n";
     cout << "mult(2,2) = " << mult(2,2) << "\n";

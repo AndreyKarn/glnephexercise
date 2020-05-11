@@ -1,10 +1,9 @@
-#ifndef STUDENTS_H
-#define STUDENTS_H
+#ifndef STRUCTURES_H
+#define STRUCTURES_H
 
 #include <iostream>
 
-class Ephemeris {
-public:
+struct Ephemeris {
     // Time in Gln
     uint8_t   N4;
     uint16_t  NT;
@@ -23,4 +22,4 @@ public:
     double AZ;
 };
 
-#endif // STUDENTS_H
+#endif // STRUCTURES_H
