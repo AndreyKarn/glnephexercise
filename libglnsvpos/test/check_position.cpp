@@ -1,8 +1,8 @@
 
 #include <check.h>
 
-#include <libglnsvpos/rungekutta.h>
-#include <libglnsvpos/glnsvpos.h>
+#include <../include/libglnsvpos/rungekutta.h>
+#include <../include/libglnsvpos/glnsvpos.h>
 
 #include <unistd.h>
 
