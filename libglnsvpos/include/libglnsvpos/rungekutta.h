@@ -3,12 +3,13 @@
 
 #include <math.h>
 #include <iostream>
+#include <stdio.h>
 
 #include "structures.h"
 
-Y_s diffs(double tn , struct Y_s* F);
+Y_s* diffs(double tn , struct Y_s Y);
 
-int RK(struct Ephemeris_s Eph);
+int RK(uint32_t N, double h, struct Y_s* Y) ;
 
 int mult(int a, int b);
 

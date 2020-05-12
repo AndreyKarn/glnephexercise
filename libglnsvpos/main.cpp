@@ -45,18 +45,31 @@ int main(int argc, char *argv[])
     struct Ephemeris_s Eph0 = CrdTrnsf2Inertial(Eph, GMST);
 
     uint32_t tn = Eph.tb; // Текущее время
-    uint32_t h = 1;  // Шаг
+    double h = 1;  // Шаг
     uint32_t Toe = (12+3)*60*60; // Начальное время
     uint32_t Tof = (24+3)*60*60; // Конечное время
+
+//    uint32_t Toe = tn-2; // Начальное время
+//    uint32_t Tof = tn+2; // Конечное время
 
     uint32_t N2inc = (Tof - tn) / h; // Количесвио отcчетов для времяни большего текущего Eph.tb
     uint32_t N2dec = (tn - Toe) / h; // Количесвио отcчетов для времяни меньшего текущего Eph.tb
     uint32_t N = N2inc + N2dec + 1; // Общее число отсчетов
     // TODO еще один отcчет это текущее время, не забывать
 
-    Y_s* Y = new Y_s[N2inc];
+    struct Y_s* Y;
+    Y = new struct Y_s[N2inc];
 
-    RK(Eph0);
+    Y[0].F1 = Eph0.X;
+    Y[0].F2 = Eph0.Y;
+    Y[0].F3 = Eph0.Z;
+    Y[0].F4 = Eph0.VX;
+    Y[0].F5 = Eph0.VY;
+    Y[0].F6 = Eph0.VZ;
+
+    RK( N2dec, -h, Y);
+
+    RK( N2inc, h, Y);
 
     cout << "add(2,2) = " << add(2,2) << "\n";
     cout << "mult(2,2) = " << mult(2,2) << "\n";
