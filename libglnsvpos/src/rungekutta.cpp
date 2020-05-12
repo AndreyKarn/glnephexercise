@@ -78,12 +78,12 @@ int RK(uint32_t N, double h, struct Y_s* Y) {
 
         k4 = diffs (0 + h , Y4);
 
-        knextstep->F1 = (double)h / 6 * ( k1->F1 + 2 * k2->F1 + 2 * k3->F1 + k4->F1 );
-        knextstep->F2 = (double)h / 6 * ( k1->F2 + 2 * k2->F2 + 2 * k3->F2 + k4->F2 );
-        knextstep->F3 = (double)h / 6 * ( k1->F3 + 2 * k2->F3 + 2 * k3->F3 + k4->F3 );
-        knextstep->F4 = (double)h / 6 * ( k1->F4 + 2 * k2->F4 + 2 * k3->F4 + k4->F4 );
-        knextstep->F5 = (double)h / 6 * ( k1->F5 + 2 * k2->F5 + 2 * k3->F5 + k4->F5 );
-        knextstep->F6 = (double)h / 6 * ( k1->F6 + 2 * k2->F6 + 2 * k3->F6 + k4->F6 );
+        knextstep->F1 = h / 6 * ( k1->F1 + 2 * k2->F1 + 2 * k3->F1 + k4->F1 );
+        knextstep->F2 = h / 6 * ( k1->F2 + 2 * k2->F2 + 2 * k3->F2 + k4->F2 );
+        knextstep->F3 = h / 6 * ( k1->F3 + 2 * k2->F3 + 2 * k3->F3 + k4->F3 );
+        knextstep->F4 = h / 6 * ( k1->F4 + 2 * k2->F4 + 2 * k3->F4 + k4->F4 );
+        knextstep->F5 = h / 6 * ( k1->F5 + 2 * k2->F5 + 2 * k3->F5 + k4->F5 );
+        knextstep->F6 = h / 6 * ( k1->F6 + 2 * k2->F6 + 2 * k3->F6 + k4->F6 );
 
         Y[k].F1 = Y[k-1].F1 + knextstep->F1;
         Y[k].F2 = Y[k-1].F2 + knextstep->F2;

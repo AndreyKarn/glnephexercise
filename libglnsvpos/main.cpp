@@ -9,7 +9,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    //QCoreApplication a(argc, argv);
 
     // Class Ephemeris
     struct Ephemeris_s Eph;
@@ -82,15 +82,44 @@ int main(int argc, char *argv[])
     struct Y_s *Yout;
     Yout = new struct Y_s[N];
 
-    for (int i = 1; i < N2dec; i++) {
+    uint32_t i;
+
+    for (i = 1; i < N2dec; i++) {
         Yout[i] = Ydec[N2dec-i];
         //cout << "Y[" << i <<"] = " << Yout[i].F1 << "\t" << Yout[i].F2 << "\t" << Yout[i].F3 << "\t" << Yout[i].F4 << "\t" << Yout[i].F5 << "\t" << Yout[i].F6 << endl;
     }
-    for (int i = 0; i < N2inc; i++) {
+    for (i = 0; i < N2inc; i++) {
         Yout[i+N2dec] = Yinc[i];
         //cout << "Y[" << i+N2dec <<"] = " << Yout[i+N2dec].F1 << "\t" << Yout[i+N2dec].F2 << "\t" << Yout[i+N2dec].F3 << "\t" << Yout[i+N2dec].F4 << "\t" << Yout[i+N2dec].F5 << "\t" << Yout[i+N2dec].F6 << endl;
     }
 
+    // Учет ускорений
+    int tau = Toe - tn;
+    for (i = 1; i <= N; i++) {
 
-    return a.exec();
+        //cout << "tau = " << tau << endl;
+
+        Yout[i].F1 += Eph0.AX * (tau * tau) / 2;
+        Yout[i].F2 += Eph0.AX * (tau * tau) / 2;
+        Yout[i].F3 += Eph0.AX * (tau * tau) / 2;
+
+        Yout[i].F4 += Eph0.AX * tau;
+        Yout[i].F5 += Eph0.AX * tau;
+        Yout[i].F6 += Eph0.AX * tau;
+
+        tau += h;
+    }
+
+    FILE *data_out_f;
+    if ((data_out_f = fopen("../data_out.txt","wb")) == NULL) {
+        perror("Error. Problem with out file\n");
+    }
+    else {
+        for(i = 1; i <= N; i++){
+            fprintf(data_out_f,"%e %e %e %e %e %e\n", Yout[i].F1, Yout[i].F2, Yout[i].F3, Yout[i].F4, Yout[i].F5, Yout[i].F6);
+        }
+    }
+    fclose(data_out_f);
+
+    //return a.exec();
 }

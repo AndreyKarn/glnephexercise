@@ -96,6 +96,8 @@ delta = [deltaX deltaY deltaZ deltaVX deltaVY deltaVZ];
 
 F1 = F1 + delta;
 
+F1C = load('../data_out.txt');
+
 %% Пересчет координат центра масс НКА в систему координат ПЗ-90
 Theta_Ge = GMST + Omega_E * (t1 - 3 * 60 * 60);
 
@@ -103,6 +105,10 @@ Theta_Ge = GMST + Omega_E * (t1 - 3 * 60 * 60);
 crd_PZ90(:,1) =  F1(:,1).*cos(Theta_Ge) + F1(:,2).*sin(Theta_Ge);
 crd_PZ90(:,2) = -F1(:,1).*sin(Theta_Ge) + F1(:,2).*cos(Theta_Ge);
 crd_PZ90(:,3) =  F1(:,3);
+
+crd_PZ90_F1C(:,1) =  F1C(:,1).*cos(Theta_Ge) + F1C(:,2).*sin(Theta_Ge);
+crd_PZ90_F1C(:,2) = -F1C(:,1).*sin(Theta_Ge) + F1C(:,2).*cos(Theta_Ge);
+crd_PZ90_F1C(:,3) =  F1C(:,3);
 
 R_PZ90 = sqrt(crd_PZ90(:,1).^2 + crd_PZ90(:,2).^2 + crd_PZ90(:,3).^2);
 R_PZ90_max = max(R_PZ90);
@@ -123,6 +129,14 @@ for i = 1:length(crd_WGS_84(1,:))
 end
 
 crd_WGS_84 = crd_WGS_84.'; % Переход к вектору-строки
+
+crd_WGS_84_F1C = crd_PZ90_F1C.'; % Переход к вектору-столбцу
+
+for i = 1:length(crd_WGS_84_F1C(1,:))
+    crd_WGS_84_F1C(:,i) =  crd_WGS_84_F1C(:,i) + MATRIX_WGS_84 * crd_WGS_84_F1C(:,i) + [0.07; -0; -0.77];
+end
+
+crd_WGS_84_F1C = crd_WGS_84_F1C.'; % Переход к вектору-строки
 
 R_WGS_84 = sqrt(crd_WGS_84(:,1).^2 + crd_WGS_84(:,2).^2 + crd_WGS_84(:,3).^2);
 R_WGS_84_max = max(R_WGS_84);
@@ -166,6 +180,27 @@ for i = 1:length(crd_WGS_84(:,1))
     end
 end
 
+for i = 1:length(crd_WGS_84_F1C(:,1))
+    
+    [XC(i) YC(i) ZC(i)] = ecef2enu(crd_WGS_84_F1C(i,1),crd_WGS_84_F1C(i,2),crd_WGS_84_F1C(i,3),N,E,H,wgs84Ellipsoid,'radians');
+    if ZC(i) > 0
+        rC(i) = sqrt(XC(i)^2 + YC(i)^2 + ZC(i)^2);
+        tetaC(i) = acos(ZC(i)/rC(i));
+        %teta(i) = atan2(sqrt(X(i)^2 + Y(i)^2),Z(i));
+        %phi(i) = atan2(Y(i),X(i));
+        if XC(i) > 0
+            phiC(i) = -atan(YC(i)/XC(i))+pi/2;
+        elseif (XC(i)<0)&&(YC(i)>0)
+            phiC(i) = -atan(YC(i)/XC(i))+3*pi/2;
+        elseif (XC(i)<0)&&(YC(i)<0)
+            phiC(i) = -atan(YC(i)/XC(i))-pi/2;
+        end
+    else tetaC(i) = NaN;
+        rC(i) = NaN;
+        phiC(i) = NaN;
+    end
+end
+
 %% построение графиков
 R_Earth = 6371e3;
 [Xz,Yz,Zz] = sphere(30);
@@ -183,6 +218,18 @@ ylabel('Ось Y, м')
 zlabel('Ось Z, м')
 hold off
 legend('Земля','ПЗ-90', 'Инерциальная СК');
+
+figure(7)
+surf(Xz*R_Earth,Yz*R_Earth,Zz*R_Earth)
+hold on
+grid on
+plot3(F1(:,1), F1(:,2), F1(:,3), 'b')
+plot3(F1C(:,1), F1C(:,2), F1C(:,3), 'g')
+title('Траектория движения спутника ГЛОНАСС №5')
+xlabel('Ось Х, м')
+ylabel('Ось Y, м')
+zlabel('Ось Z, м')
+hold off
 
 % СК ПЗ-90
 figure(2)
@@ -212,6 +259,13 @@ hold off
 figure(4);
 ax = polaraxes;
 polarplot(ax,phi,teta*180/pi,'r')
+ax.ThetaDir = 'clockwise';
+ax.ThetaZeroLocation = 'top';
+title('SkyView спутника ГЛОНАСС №5')
+
+figure(6);
+ax = polaraxes;
+polarplot(ax,phiC,tetaC*180/pi,'r')
 ax.ThetaDir = 'clockwise';
 ax.ThetaZeroLocation = 'top';
 title('SkyView спутника ГЛОНАСС №5')
