@@ -9,17 +9,15 @@ struct Ephemeris {
     uint16_t  NT;
     uint32_t  tb;
     // Coordinates
-    double X;
-    double Y;
-    double Z;
+    double X, Y, Z;
     // Velocity
-    double VX;
-    double VY;
-    double VZ;
+    double VX, VY,VZ;
     // Acceleration
-    double AX;
-    double AY;
-    double AZ;
+    double AX, AY, AZ;
+};
+
+struct F0 {
+    double F1, F2, F3, F4, F5, F6;
 };
 
 #endif // STRUCTURES_H

@@ -30,16 +30,6 @@ Ephemeris CrdTrnsf2Inertial(struct Ephemeris Eph, double GMST) {
 
     double Theta_Ge = GMST + Omega_E * (Eph.tb - 3 * 60 * 60);
 
-    /* BUG что-то косинус брахлит
-    double Theta_Ge1 = 1.475968043857159e+04*M_PI;
-
-    double cosTheta_Ge = cos(Theta_Ge);
-    double cosTheta_Ge1 = cos(Theta_Ge1);
-
-    cout << "cos(Theta_Ge) = " << cosTheta_Ge << "\n";
-    cout << "cos(Theta_Ge1) = " << cosTheta_Ge1 << "\n";
-    */
-
     // Координаты:
     Eph0.X = Eph.X * cos(Theta_Ge) - Eph.Y * sin(Theta_Ge);
     Eph0.Y = Eph.X * sin(Theta_Ge) + Eph.Y * cos(Theta_Ge);

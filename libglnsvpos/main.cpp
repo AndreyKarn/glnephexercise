@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     // Class Ephemeris
-    Ephemeris Eph;
+    struct Ephemeris Eph;
 
     // Coordinates
     Eph.X = -8444572.27;
@@ -42,7 +42,8 @@ int main(int argc, char *argv[])
 
     double GMST = GMST_calc( Eph.N4, Eph.NT);
 
-    Ephemeris Eph0 = CrdTrnsf2Inertial(Eph, GMST);
+    struct Ephemeris Eph0 = CrdTrnsf2Inertial(Eph, GMST);
+    RK(Eph0);
 
     cout << "add(2,2) = " << add(2,2) << "\n";
     cout << "mult(2,2) = " << mult(2,2) << "\n";
