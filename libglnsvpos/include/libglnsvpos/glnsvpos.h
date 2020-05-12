@@ -7,7 +7,7 @@
 #include "structures.h"
 
 double GMST_calc(uint8_t N4, uint16_t NT);
-Ephemeris CrdTrnsf2Inertial(struct Ephemeris Eph, double GMST);
+Ephemeris_s CrdTrnsf2Inertial(struct Ephemeris_s Eph, double GMST);
 
 int add(int a, int b);
 

@@ -23,8 +23,8 @@ double GMST_calc(uint8_t N4, uint16_t NT) {
     return GMST;
 }
 
-Ephemeris CrdTrnsf2Inertial(struct Ephemeris Eph, double GMST) {
-    struct Ephemeris Eph0;
+Ephemeris_s CrdTrnsf2Inertial(struct Ephemeris_s Eph, double GMST) {
+    struct Ephemeris_s Eph0;
 
     double Omega_E = 7.2921151467e-5;
 

@@ -6,9 +6,9 @@
 
 #include "structures.h"
 
-F0 diffs(double tn , struct F0* F);
+Y_s diffs(double tn , struct Y_s* F);
 
-int RK(struct Ephemeris Eph);
+int RK(struct Ephemeris_s Eph);
 
 int mult(int a, int b);
 

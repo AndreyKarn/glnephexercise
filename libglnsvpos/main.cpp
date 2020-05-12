@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     // Class Ephemeris
-    struct Ephemeris Eph;
+    struct Ephemeris_s Eph;
 
     // Coordinates
     Eph.X = -8444572.27;
@@ -42,7 +42,20 @@ int main(int argc, char *argv[])
 
     double GMST = GMST_calc( Eph.N4, Eph.NT);
 
-    struct Ephemeris Eph0 = CrdTrnsf2Inertial(Eph, GMST);
+    struct Ephemeris_s Eph0 = CrdTrnsf2Inertial(Eph, GMST);
+
+    uint32_t tn = Eph.tb; // Текущее время
+    uint32_t h = 1;  // Шаг
+    uint32_t Toe = (12+3)*60*60; // Начальное время
+    uint32_t Tof = (24+3)*60*60; // Конечное время
+
+    uint32_t N2inc = (Tof - tn) / h; // Количесвио отcчетов для времяни большего текущего Eph.tb
+    uint32_t N2dec = (tn - Toe) / h; // Количесвио отcчетов для времяни меньшего текущего Eph.tb
+    uint32_t N = N2inc + N2dec + 1; // Общее число отсчетов
+    // TODO еще один отcчет это текущее время, не забывать
+
+    Y_s* Y = new Y_s[N2inc];
+
     RK(Eph0);
 
     cout << "add(2,2) = " << add(2,2) << "\n";

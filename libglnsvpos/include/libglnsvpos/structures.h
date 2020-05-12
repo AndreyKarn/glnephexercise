@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-struct Ephemeris {
+struct Ephemeris_s {
     // Time in Gln
     uint8_t   N4;
     uint16_t  NT;
@@ -16,7 +16,7 @@ struct Ephemeris {
     double AX, AY, AZ;
 };
 
-struct F0 {
+struct Y_s {
     double F1, F2, F3, F4, F5, F6;
 };
 

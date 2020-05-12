@@ -3,7 +3,7 @@
 
 using namespace std;
 
-F0 diffs(double tn , struct F0* Y)
+Y_s diffs(double tn , struct Y_s Y)
 {
     double J02 = 1082625.75e-9; // зональный гармонический коэффициент второй степени, характеризующий полярное сжатие Земли
     double GM = 398600441.8e6; // геоцентрическая константа гравитационного поля Земли с учетом атмосферы, [м3/c2]
@@ -21,7 +21,7 @@ F0 diffs(double tn , struct F0* Y)
     double crdY0 = crdY / r;
     double crdZ0 = crdZ / r;
 
-    struct F0 dY;
+    struct Y_s dY;
     // Дифуры
     dY.F1 = Y.F4;
     dY.F2 = Y.F5;
@@ -34,23 +34,18 @@ F0 diffs(double tn , struct F0* Y)
     return dY;
 }
 
-int RK(struct Ephemeris Eph) {
-
-    int N = 1000;
-    uint32_t tn = Eph.tb; // Текущее время
-    uint32_t h = 1;  // Шаг
-    uint32_t toe = (24+3)*60*60; // Конечное время
+int RK(struct Ephemeris_s Eph) {
 
     // Коэф. фильтра
-    F0* k1 = new F0[N];
-    F0* k2 = new F0[N];
-    F0* k3 = new F0[N];
-    F0* k4 = new F0[N];
+//    F0* k1 = new F0[N];
+//    F0* k2 = new F0[N];
+//    F0* k3 = new F0[N];
+//    F0* k4 = new F0[N];
 
-    F0* Y = new F0[N];
-    F0* Y2 = new F0[N];
-    F0* Y3 = new F0[N];
-    F0* Y4 = new F0[N];
+//    F0* Y = new F0[N];
+//    F0* Y2 = new F0[N];
+//    F0* Y3 = new F0[N];
+//    F0* Y4 = new F0[N];
 
 
     // Начальные условия
@@ -66,9 +61,9 @@ int RK(struct Ephemeris Eph) {
 //    cout << &(Y->F1) << std::endl; // adress
 
     //while (tn <= toe)
-    int k = 0;
-    while (k <= N)
-    {
+//    int k = 0;
+//    while (k <= N)
+//    {
 //        k1 = diffs(tn, Y);
 
 //        Y2.F1 = Y.F1 + h * k1.F1 / 2;
@@ -105,7 +100,7 @@ int RK(struct Ephemeris Eph) {
 //        Y.F5 += h / 6 * ( k1.F5 + 2 * k2.F5 + 2 * k3.F5 + k4.F5 );
 //        Y.F6 += h / 6 * ( k1.F6 + 2 * k2.F6 + 2 * k3.F6 + k4.F6 );
 //        tn += h;
-    }
+//    }
     return 0;
 };
 
