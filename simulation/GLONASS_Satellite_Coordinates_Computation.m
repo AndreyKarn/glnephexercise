@@ -69,10 +69,12 @@ ti = Toe:Ts:Tof;
 
 F0 = [X0 Y0 Z0 VX0 VY0 VZ0]; % Начальные условия
 
-[t, Y] = ode45('diffs', tb:-Ts:ti(1), F0); % Метод Рунге-Кутта 4-го порядка
+%[t, Y] = ode45('diffs', tb:-Ts:ti(1), F0); % Метод Рунге-Кутта 4-го порядка
+[t, Y] = RungeKutta4( tb,-Ts,ti(1),F0 );
 F1 = Y(end:-1:2,:);
 t1 = t(end:-1:2,:);
-[t, Y] = ode45('diffs', tb:Ts:ti(end), F0); % Метод Рунге-Кутта 4-го порядка
+%[t, Y] = ode45('diffs', tb:Ts:ti(end), F0); % Метод Рунге-Кутта 4-го порядка
+[t, Y] = RungeKutta4( tb,Ts,ti(end),F0 );
 F1 = [F1; Y];
 t1 = [t1; t];
 
