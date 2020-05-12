@@ -92,7 +92,7 @@ int RK(uint32_t N, double h, struct Y_s* Y) {
         Y[k].F5 = Y[k-1].F5 + knextstep->F5;
         Y[k].F6 = Y[k-1].F6 + knextstep->F6;
 
-        cout << "Y[" << k <<"].F1 = " << Y[k].F1 << endl;
+        //cout << "Y[" << k <<"] = " << Y[k-1].F1 << "\t" << Y[k-1].F2 << "\t" << Y[k-1].F3 << "\t" << Y[k-1].F4 << "\t" << Y[k-1].F5 << "\t" << Y[k-1].F6 << endl;
 
         delete k1;
         delete k2;

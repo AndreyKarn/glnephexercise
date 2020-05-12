@@ -52,27 +52,45 @@ int main(int argc, char *argv[])
 //    uint32_t Toe = tn-2; // Начальное время
 //    uint32_t Tof = tn+2; // Конечное время
 
-    uint32_t N2inc = (Tof - tn) / h; // Количесвио отcчетов для времяни большего текущего Eph.tb
-    uint32_t N2dec = (tn - Toe) / h; // Количесвио отcчетов для времяни меньшего текущего Eph.tb
-    uint32_t N = N2inc + N2dec + 1; // Общее число отсчетов
+    uint32_t N2inc = (Tof - tn + 1) / h; // Количесвио отcчетов для времяни большего текущего Eph.tb
+    uint32_t N2dec = (tn - Toe + 1) / h; // Количесвио отcчетов для времяни меньшего текущего Eph.tb
+    uint32_t N = N2inc + N2dec - 1; // Общее число отсчетов
     // TODO еще один отcчет это текущее время, не забывать
 
-    struct Y_s* Y;
-    Y = new struct Y_s[N2inc];
+    struct Y_s *Yinc;
+    Yinc = new struct Y_s[N2inc];
+    Yinc[0].F1 = Eph0.X;
+    Yinc[0].F2 = Eph0.Y;
+    Yinc[0].F3 = Eph0.Z;
+    Yinc[0].F4 = Eph0.VX;
+    Yinc[0].F5 = Eph0.VY;
+    Yinc[0].F6 = Eph0.VZ;
 
-    Y[0].F1 = Eph0.X;
-    Y[0].F2 = Eph0.Y;
-    Y[0].F3 = Eph0.Z;
-    Y[0].F4 = Eph0.VX;
-    Y[0].F5 = Eph0.VY;
-    Y[0].F6 = Eph0.VZ;
+    RK( N2inc, h, Yinc);
 
-    RK( N2dec, -h, Y);
+    struct Y_s *Ydec;
+    Ydec = new struct Y_s[N2dec];
+    Ydec[0].F1 = Eph0.X;
+    Ydec[0].F2 = Eph0.Y;
+    Ydec[0].F3 = Eph0.Z;
+    Ydec[0].F4 = Eph0.VX;
+    Ydec[0].F5 = Eph0.VY;
+    Ydec[0].F6 = Eph0.VZ;
 
-    RK( N2inc, h, Y);
+    RK( N2dec, -h, Ydec);
 
-    cout << "add(2,2) = " << add(2,2) << "\n";
-    cout << "mult(2,2) = " << mult(2,2) << "\n";
+    struct Y_s *Yout;
+    Yout = new struct Y_s[N];
+
+    for (int i = 1; i < N2dec; i++) {
+        Yout[i] = Ydec[N2dec-i];
+        //cout << "Y[" << i <<"] = " << Yout[i].F1 << "\t" << Yout[i].F2 << "\t" << Yout[i].F3 << "\t" << Yout[i].F4 << "\t" << Yout[i].F5 << "\t" << Yout[i].F6 << endl;
+    }
+    for (int i = 0; i < N2inc; i++) {
+        Yout[i+N2dec] = Yinc[i];
+        //cout << "Y[" << i+N2dec <<"] = " << Yout[i+N2dec].F1 << "\t" << Yout[i+N2dec].F2 << "\t" << Yout[i+N2dec].F3 << "\t" << Yout[i+N2dec].F4 << "\t" << Yout[i+N2dec].F5 << "\t" << Yout[i+N2dec].F6 << endl;
+    }
+
 
     return a.exec();
 }
