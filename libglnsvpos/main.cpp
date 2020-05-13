@@ -49,24 +49,10 @@ int main(int argc, char *argv[])
     uint32_t Toe = (12+3)*60*60; // Начальное время
     uint32_t Tof = (24+3)*60*60; // Конечное время
 
-//    uint32_t Toe = tn-2; // Начальное время
-//    uint32_t Tof = tn+2; // Конечное время
-
     uint32_t N2inc = (Tof - tn + 1) / h; // Количесвио отcчетов для времяни большего текущего Eph.tb
     uint32_t N2dec = (tn - Toe + 1) / h; // Количесвио отcчетов для времяни меньшего текущего Eph.tb
     uint32_t N = N2inc + N2dec - 1; // Общее число отсчетов
     // TODO еще один отcчет это текущее время, не забывать
-
-    struct Y_s *Yinc;
-    Yinc = new struct Y_s[N2inc];
-    Yinc[0].F1 = Eph0.X;
-    Yinc[0].F2 = Eph0.Y;
-    Yinc[0].F3 = Eph0.Z;
-    Yinc[0].F4 = Eph0.VX;
-    Yinc[0].F5 = Eph0.VY;
-    Yinc[0].F6 = Eph0.VZ;
-
-    RK( N2inc, h, Yinc);
 
     struct Y_s *Ydec;
     Ydec = new struct Y_s[N2dec];
@@ -78,6 +64,17 @@ int main(int argc, char *argv[])
     Ydec[0].F6 = Eph0.VZ;
 
     RK( N2dec, -h, Ydec);
+
+    struct Y_s *Yinc;
+    Yinc = new struct Y_s[N2inc];
+    Yinc[0].F1 = Eph0.X;
+    Yinc[0].F2 = Eph0.Y;
+    Yinc[0].F3 = Eph0.Z;
+    Yinc[0].F4 = Eph0.VX;
+    Yinc[0].F5 = Eph0.VY;
+    Yinc[0].F6 = Eph0.VZ;
+
+    RK( N2inc, h, Yinc);
 
     struct Y_s *Yout;
     Yout = new struct Y_s[N];
