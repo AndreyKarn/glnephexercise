@@ -5,7 +5,7 @@
 
 struct Ephemeris_s {
     // Time in Gln
-    uint8_t   N4;
+    uint16_t   N4;
     uint16_t  NT;
     uint32_t  tb;
     // Coordinates

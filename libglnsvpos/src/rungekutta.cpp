@@ -41,10 +41,10 @@ int RK(uint32_t N, double h, struct Y_s* Y) {
     struct Y_s *k1, *k2, *k3, *k4, *knextstep;
     struct Y_s Y2, Y3, Y4;
 
-    FILE *data_out_f;
-    if ((data_out_f = fopen("../test_data_out.txt","wb")) == NULL) {
-        perror("Error. Problem with out file\n");
-    }
+//    FILE *data_out_f;
+//    if ((data_out_f = fopen("../test_data_out.txt","wb")) == NULL) {
+//        perror("Error. Problem with out file\n");
+//    }
 
     for (uint32_t k = 1; k < N; k++)
     {
@@ -103,7 +103,7 @@ int RK(uint32_t N, double h, struct Y_s* Y) {
 
         //cout << "Y[" << k <<"] = " << Y[k-1].F1 << "\t" << Y[k-1].F2 << "\t" << Y[k-1].F3 << "\t" << Y[k-1].F4 << "\t" << Y[k-1].F5 << "\t" << Y[k-1].F6 << endl;
 
-        fprintf(data_out_f,"%e %e %e %e %e %e\n", knextstep->F1, knextstep->F2, knextstep->F3, knextstep->F4, k1->F5, knextstep->F6);
+//        fprintf(data_out_f,"%e %e %e %e %e %e\n", knextstep->F1, knextstep->F2, knextstep->F3, knextstep->F4, k1->F5, knextstep->F6);
 
         delete k1;
         delete k2;
@@ -112,7 +112,7 @@ int RK(uint32_t N, double h, struct Y_s* Y) {
         delete knextstep;
     }
 
-    fclose(data_out_f);
+//    fclose(data_out_f);
 
     return 0;
 };

@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
+        src/func.cpp \
         src/glnsvpos.cpp \
         src/rungekutta.cpp
 
@@ -25,6 +26,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    include/libglnsvpos/func.h \
     include/libglnsvpos/glnsvpos.h \
     include/libglnsvpos/rungekutta.h \
     include/libglnsvpos/structures.h
