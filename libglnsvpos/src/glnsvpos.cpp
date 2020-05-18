@@ -154,8 +154,8 @@ int glnsvpos(bool RK_valid, double h) {
             perror("Error. Problem with out file\n");
         }
         else {
-            for(i = 0; i <= N; i++){
-                fprintf(data_out_f,"%.20e\n", delta[i]);
+            for(i = 0; i <= N; i++) {
+                fprintf(data_out_f,"%.15e\n", delta[i]);
             }
         }
         fclose(data_out_f);
