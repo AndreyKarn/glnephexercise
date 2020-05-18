@@ -17,7 +17,7 @@ struct Ephemeris_s {
 };
 
 struct Y_s {
-    double F1, F2, F3, F4, F5, F6;
+    double X, Y, Z, VX, VY, VZ;
 };
 
 #endif // STRUCTURES_H

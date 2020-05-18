@@ -11,7 +11,11 @@ int main() {
 
     cout << "Calculation started" << endl;
 
-    glnsvpos();
+    if(glnsvpos(1, 1)) { // (RK_valid h): RK_valid - allows calculation RungeKutta; h - time step [s]
+        cout << "Calculation finished successful" << endl;
+    } else {
+        cout << "Calculation finished failed " << endl;
+    }
+    cout << "Press any key to continue..." << endl;
 
-    cout << "Calculation finished" << endl;
 }

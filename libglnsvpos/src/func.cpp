@@ -49,7 +49,6 @@ Ephemeris_s CrdTrnsf2Inertial(struct Ephemeris_s Eph, double GMST) {
     double Omega_E = 7.2921151467e-5;
 
     double Theta_Ge = GMST + Omega_E * (Eph.tb - 3 * 60 * 60);
-    //double Theta_Ge = 4.636890363514948e+04;
 
     // Координаты:
     Eph0.X = Eph.X * cos(Theta_Ge) - Eph.Y * sin(Theta_Ge);
@@ -72,6 +71,51 @@ Ephemeris_s CrdTrnsf2Inertial(struct Ephemeris_s Eph, double GMST) {
     Eph0.tb = Eph.tb;
 
     return Eph0;
+}
+
+void write_struct_Y(struct Y_s *Y_data, uint64_t Size, char *fname) {
+
+    // Запись в файл (для матлаба)
+    FILE *file;
+    if ((file = fopen(fname,"wb")) == NULL) {
+        perror("Error. Problem with file\n");
+    }
+    else {
+        for(uint32_t i = 0; i <= Size; i++) {
+            fprintf(file,"%.15e %.15e %.15e %.15e %.15e %.15e\n", Y_data[i].X, Y_data[i].Y, Y_data[i].Z, Y_data[i].VX, Y_data[i].VY, Y_data[i].VZ);
+        }
+    }
+    fclose(file);
+}
+
+void read_struct_Y(struct Y_s *Y_data, uint64_t Size, char *fname) {
+
+    // Чтение из файла (из матлаба)
+
+    ifstream file(fname);
+    if (file.is_open()) { //Если открытие файла прошло успешно
+
+        string line; //Строчка текста
+
+        uint32_t i;
+
+        for (i = 0; i <= Size; i++) {
+            getline(file, line);
+            istringstream iss(line);
+            iss >> Y_data[i].X;
+        }
+        for (i = 0; i <= Size; i++) {
+            getline(file, line);
+            istringstream iss(line);
+            iss >> Y_data[i].Y;
+        }
+        for (i = 0; i <= Size; i++) {
+            getline(file, line);
+            istringstream iss(line);
+            iss >> Y_data[i].Z;
+        }
+    }
+    else perror("Error. Problem with file\n");
 }
 
 int add(int a, int b) {

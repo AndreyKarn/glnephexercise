@@ -63,27 +63,25 @@ JZ0ms = AZ;
 %% Интегрирование численным методом
 Toe = (12+3)*60*60;
 Tof = (24+3)*60*60;
-Ts = 0.5;
+h = 1;
 
-ti = Toe:Ts:Tof;
+ti = Toe:h:Tof;
 
 F0 = [X0 Y0 Z0 VX0 VY0 VZ0]; % Начальные условия
 
-%[t, Y] = ode45('diffs', tb:-Ts:ti(1), F0); % Метод Рунге-Кутта 4-го порядка
-[t, Y] = RungeKutta4( tb,-Ts,ti(1),F0 );
-F1 = Y(end:-1:2,:);
-t1 = t(end:-1:2,:);
-%[t, Y] = ode45('diffs', tb:Ts:ti(end), F0); % Метод Рунге-Кутта 4-го порядка
-[t, Y] = RungeKutta4( tb,Ts,ti(end),F0 );
-F1 = [F1; Y];
-t1 = [t1; t];
+% [t, F] = ode45('diffs', tb:-Ts:ti(1), F0); % Метод Рунге-Кутта 4-го порядка
+[t, F] = RungeKutta4( tb,-h,ti(1),F0 );
+Fout = F(end:-1:2,:);
+tout = t(end:-1:2,:);
+% [t, F] = ode45('diffs', tb:Ts:ti(end), F0); % Метод Рунге-Кутта 4-го порядка
+[t, F] = RungeKutta4( tb,h,ti(end),F0 );
+Fout = [Fout; F];
+tout = [tout; t];
 
-R_inrt = sqrt(F1(:,1).^2 + F1(:,2).^2 + F1(:,3).^2);
-R_inrt_max = max(R_inrt);
-R_inrt_min = min(R_inrt);
+th = hours(tout/60/60-3); % Перевод временной оси в формат hh:mm:ss
 
 %% Учет ускорений
-tau = t1 - tb;
+tau = tout - tb;
 deltaX = JX0ms*(tau.^2)/2;
 deltaY = JY0ms*(tau.^2)/2;
 deltaZ = JZ0ms*(tau.^2)/2;
@@ -94,35 +92,37 @@ deltaVZ = JZ0ms*tau;
 
 delta = [deltaX deltaY deltaZ deltaVX deltaVY deltaVZ];
 
-F1 = F1 + delta;
+Fout = Fout + delta;
 
-F1C = load('../data_out.txt');
+%% Чтение и запись файликов
+% Чтение из файла
+FoutC = load('../source/data_out.txt'); 
+% Fout = load('../source/Matlab_data_for_h01.txt'); 
 
-%% Пересчет координат центра масс НКА в систему координат ПЗ-90
-Theta_Ge = GMST + Omega_E * (t1 - 3 * 60 * 60);
+% Запись в файл
+data_out = fopen('../source/Matlab_test_data_out.txt', 'w+');     % открытие файла на запись
+if data_out == -1                     % проверка корректности открытия
+    error('File is not opened');
+end
 
-% Координаты:
-crd_PZ90(:,1) =  F1(:,1).*cos(Theta_Ge) + F1(:,2).*sin(Theta_Ge);
-crd_PZ90(:,2) = -F1(:,1).*sin(Theta_Ge) + F1(:,2).*cos(Theta_Ge);
-crd_PZ90(:,3) =  F1(:,3);
+F_out = [Fout(:,1), Fout(:,2), Fout(:,3)];
+fprintf(data_out, '%.15f\n', F_out);   % запись в файл
+fclose(data_out);                % закрытие файла
 
-crd_PZ90_F1C(:,1) =  F1C(1:length(t1),1).*cos(Theta_Ge) + F1C(1:length(t1),2).*sin(Theta_Ge);
-crd_PZ90_F1C(:,2) = -F1C(1:length(t1),1).*sin(Theta_Ge) + F1C(1:length(t1),2).*cos(Theta_Ge);
-crd_PZ90_F1C(:,3) =  F1C(1:length(t1),3);
-
-delta_crd_PZ90 = crd_PZ90 - crd_PZ90_F1C;
+%% Расчет разницы с Си
+DeltaF1 = Fout - FoutC;
+D_DeltaF1 = sqrt( DeltaF1(:,1).^2 + DeltaF1(:,2).^2 + DeltaF1(:,3).^2 );
 
 figure
 hold on
 grid on
-plot(delta_crd_PZ90(:,1))
-plot(delta_crd_PZ90(:,2))
-plot(delta_crd_PZ90(:,3))
-legend('deltaX','deltaY','deltaZ')
+plot(th, D_DeltaF1, 'DurationTickFormat','hh:mm:ss')
+%% Пересчет координат центра масс НКА в систему координат ПЗ-90
+Theta_Ge = GMST + Omega_E * (tout - 3 * 60 * 60);
 
-R_PZ90 = sqrt(crd_PZ90(:,1).^2 + crd_PZ90(:,2).^2 + crd_PZ90(:,3).^2);
-R_PZ90_max = max(R_PZ90);
-R_PZ90_min = min(R_PZ90);
+crd_PZ90(:,1) =  Fout(:,1).*cos(Theta_Ge) + Fout(:,2).*sin(Theta_Ge);
+crd_PZ90(:,2) = -Fout(:,1).*sin(Theta_Ge) + Fout(:,2).*cos(Theta_Ge);
+crd_PZ90(:,3) =  Fout(:,3);
 
 %% Пересчет координат центра масс НКА в систему координат WGS-84
 ppb = 1e-9;
@@ -139,18 +139,6 @@ for i = 1:length(crd_WGS_84(1,:))
 end
 
 crd_WGS_84 = crd_WGS_84.'; % Переход к вектору-строки
-
-% crd_WGS_84_F1C = crd_PZ90_F1C.'; % Переход к вектору-столбцу
-% 
-% for i = 1:length(crd_WGS_84_F1C(1,:))
-%     crd_WGS_84_F1C(:,i) =  crd_WGS_84_F1C(:,i) + MATRIX_WGS_84 * crd_WGS_84_F1C(:,i) + [0.07; -0; -0.77];
-% end
-% 
-% crd_WGS_84_F1C = crd_WGS_84_F1C.'; % Переход к вектору-строки
-
-R_WGS_84 = sqrt(crd_WGS_84(:,1).^2 + crd_WGS_84(:,2).^2 + crd_WGS_84(:,3).^2);
-R_WGS_84_max = max(R_WGS_84);
-R_WGS_84_min = min(R_WGS_84);
 
 %% Географические координаты корпуса Е и их перевод в систему WGS-84
 N_gr = 55;
@@ -190,38 +178,17 @@ for i = 1:length(crd_WGS_84(:,1))
     end
 end
 
-% for i = 1:length(crd_WGS_84_F1C(:,1))
-%     
-%     [XC(i) YC(i) ZC(i)] = ecef2enu(crd_WGS_84_F1C(i,1),crd_WGS_84_F1C(i,2),crd_WGS_84_F1C(i,3),N,E,H,wgs84Ellipsoid,'radians');
-%     if ZC(i) > 0
-%         rC(i) = sqrt(XC(i)^2 + YC(i)^2 + ZC(i)^2);
-%         tetaC(i) = acos(ZC(i)/rC(i));
-%         %teta(i) = atan2(sqrt(X(i)^2 + Y(i)^2),Z(i));
-%         %phi(i) = atan2(Y(i),X(i));
-%         if XC(i) > 0
-%             phiC(i) = -atan(YC(i)/XC(i))+pi/2;
-%         elseif (XC(i)<0)&&(YC(i)>0)
-%             phiC(i) = -atan(YC(i)/XC(i))+3*pi/2;
-%         elseif (XC(i)<0)&&(YC(i)<0)
-%             phiC(i) = -atan(YC(i)/XC(i))-pi/2;
-%         end
-%     else tetaC(i) = NaN;
-%         rC(i) = NaN;
-%         phiC(i) = NaN;
-%     end
-% end
-
 %% построение графиков
 R_Earth = 6371e3;
 [Xz,Yz,Zz] = sphere(30);
 
 % Инерциальная СК и ПЗ-90
-figure(1)
+figure
 surf(Xz*R_Earth,Yz*R_Earth,Zz*R_Earth)
 hold on
 grid on
 plot3(crd_PZ90(:,1), crd_PZ90(:,2), crd_PZ90(:,3), 'r')
-plot3(F1(:,1), F1(:,2), F1(:,3), 'b')
+plot3(Fout(:,1), Fout(:,2), Fout(:,3), 'b')
 title('Траектория движения спутника ГЛОНАСС №5')
 xlabel('Ось Х, м')
 ylabel('Ось Y, м')
@@ -229,12 +196,11 @@ zlabel('Ось Z, м')
 hold off
 legend('Земля','ПЗ-90', 'Инерциальная СК');
 
-figure(7)
+figure
 surf(Xz*R_Earth,Yz*R_Earth,Zz*R_Earth)
 hold on
 grid on
-plot3(F1(:,1), F1(:,2), F1(:,3), 'b')
-plot3(F1C(:,1), F1C(:,2), F1C(:,3), 'g')
+plot3(Fout(:,1), Fout(:,2), Fout(:,3), 'b')
 title('Траектория движения спутника ГЛОНАСС №5')
 xlabel('Ось Х, м')
 ylabel('Ось Y, м')
@@ -242,7 +208,7 @@ zlabel('Ось Z, м')
 hold off
 
 % СК ПЗ-90
-figure(2)
+figure
 surf(Xz*R_Earth,Yz*R_Earth,Zz*R_Earth)
 hold on
 grid on
@@ -254,7 +220,7 @@ zlabel('Ось Z, м')
 hold off
 
 % СК WGS-84
-figure(3)
+figure
 surf(Xz*R_Earth,Yz*R_Earth,Zz*R_Earth)
 grid on
 hold on
@@ -266,27 +232,18 @@ zlabel('Ось Z, м')
 hold off
 
 % Скайплот
-figure(4);
+figure
 ax = polaraxes;
-polarplot(ax,phi,teta*180/pi,'r')
+polarplot(ax,phi,teta*180/pi)
 ax.ThetaDir = 'clockwise';
 ax.ThetaZeroLocation = 'top';
 title('SkyView спутника ГЛОНАСС №5')
 
-% figure(6);
-% ax = polaraxes;
-% polarplot(ax,phiC,tetaC*180/pi,'r')
-% ax.ThetaDir = 'clockwise';
-% ax.ThetaZeroLocation = 'top';
-% title('SkyView спутника ГЛОНАСС №5')
-
-th = hours(t1/60/60-3);
-
-figure(5);
+% Угол места
+figure
 grid on
 hold on
 plot(th,(-teta)*180/pi+90,'DurationTickFormat','hh:mm:ss')
 title('Угол места')
 xlabel('Время в МДВ')
 ylabel('Угол места, град')
-

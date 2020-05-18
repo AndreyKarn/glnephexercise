@@ -12,6 +12,9 @@ double GMST_calc(uint8_t N4, uint16_t NT);
 
 Ephemeris_s CrdTrnsf2Inertial(struct Ephemeris_s Eph, double GMST);
 
+void write_struct_Y(struct Y_s *Y_data, uint64_t Size, char *fname);
+void read_struct_Y(struct Y_s *Y_data, uint64_t Size, char *fname);
+
 int add(int a, int b);
 
 #endif // FUNC_H

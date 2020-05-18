@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int glnsvpos() {
+int glnsvpos(bool RK_valid, double h) {
 
     // Class Ephemeris
     struct Ephemeris_s Eph;
@@ -53,37 +53,36 @@ int glnsvpos() {
     struct Ephemeris_s Eph0 = CrdTrnsf2Inertial( Eph, GMST );
 
     uint32_t tn = Eph.tb; // Текущее время
-    double h = 0.5;  // Шаг
     uint32_t Toe = (12+3)*60*60; // Начальное время
     uint32_t Tof = (24+3)*60*60; // Конечное время
 
-    uint32_t N2inc = (Tof - tn + 1) / h; // Количесвио отcчетов для времени большего текущего Eph.tb
-    uint32_t N2dec = (tn - Toe + 1) / h; // Количесвио отcчетов для времени меньшего текущего Eph.tb
-    uint32_t N = N2inc + N2dec - 1; // Общее число отсчетов
+    uint64_t N2inc = (Tof - tn) / (double)h; // Количесвио отcчетов для времени большего текущего Eph.tb
+    uint64_t N2dec = (tn - Toe) / (double)h; // Количесвио отcчетов для времени меньшего текущего Eph.tb
+    uint64_t N = N2inc + N2dec; // Общее число отсчетов
 
     // Численное интегрирования для времени меньшего текущего Eph.tb
     struct Y_s *Ydec;
     Ydec = new struct Y_s[N2dec];
-    Ydec[0].F1 = Eph0.X;
-    Ydec[0].F2 = Eph0.Y;
-    Ydec[0].F3 = Eph0.Z;
-    Ydec[0].F4 = Eph0.VX;
-    Ydec[0].F5 = Eph0.VY;
-    Ydec[0].F6 = Eph0.VZ;
+    Ydec[0].X = Eph0.X;
+    Ydec[0].Y = Eph0.Y;
+    Ydec[0].Z = Eph0.Z;
+    Ydec[0].VX = Eph0.VX;
+    Ydec[0].VY = Eph0.VY;
+    Ydec[0].VZ = Eph0.VZ;
 
-    RK( N2dec, -h, Ydec);
+    if (RK_valid) RK( N2dec, -h, Ydec);
 
     // Численное интегрирования для времени большего текущего Eph.tb
     struct Y_s *Yinc;
     Yinc = new struct Y_s[N2inc];
-    Yinc[0].F1 = Eph0.X;
-    Yinc[0].F2 = Eph0.Y;
-    Yinc[0].F3 = Eph0.Z;
-    Yinc[0].F4 = Eph0.VX;
-    Yinc[0].F5 = Eph0.VY;
-    Yinc[0].F6 = Eph0.VZ;
+    Yinc[0].X = Eph0.X;
+    Yinc[0].Y = Eph0.Y;
+    Yinc[0].Z = Eph0.Z;
+    Yinc[0].VX = Eph0.VX;
+    Yinc[0].VY = Eph0.VY;
+    Yinc[0].VZ = Eph0.VZ;
 
-    RK( N2inc, h, Yinc);
+    if (RK_valid) RK( N2inc, h, Yinc);
 
     // Формирование выходного массива
     struct Y_s *Yout;
@@ -91,44 +90,84 @@ int glnsvpos() {
 
     uint32_t i;
 
-    for (i = 1; i < N2dec; i++) {
+    // -----------------------------------------
+    // M:  1   2   3   4   5    - adress
+    //    x1  x2  x3  x4  x5    - value
+    // C:  0   1   2   3   4    - adress
+    //    x1  x2  x3  x4  x5    - value
+    // if MATLAB array size N, then in C++ N-1
+    // -----------------------------------------
+
+    for (i = 0; i <= N2dec; i++) {
         Yout[i] = Ydec[N2dec-i];
-        //cout << "Y[" << i <<"] = " << Yout[i].F1 << "\t" << Yout[i].F2 << "\t" << Yout[i].F3 << "\t" << Yout[i].F4 << "\t" << Yout[i].F5 << "\t" << Yout[i].F6 << endl;
+        //cout << " i = " << i << " N2dec-i = " << N2dec-i << endl;
     }
-    for (i = 0; i < N2inc; i++) {
+    for (i = 0; i <= N2inc; i++) {
         Yout[i+N2dec] = Yinc[i];
-        //cout << "Y[" << i+N2dec <<"] = " << Yout[i+N2dec].F1 << "\t" << Yout[i+N2dec].F2 << "\t" << Yout[i+N2dec].F3 << "\t" << Yout[i+N2dec].F4 << "\t" << Yout[i+N2dec].F5 << "\t" << Yout[i+N2dec].F6 << endl;
+        //cout << " i = " << i << " i+N2dec = " << i+N2dec << endl;
     }
-    delete []Ydec; // Очищение памяти
-    delete []Yinc; // Очищение памяти
 
     // Учет ускорений
-    int tau = Toe - tn;
-    for (i = 1; i <= N; i++) {
+    double tau = (double)Toe - (double)tn;
+    for (i = 0; i <= N; i++) {
 
         //cout << "tau = " << tau << endl;
 
-        Yout[i].F1 += Eph0.AX * (tau * tau) / 2;
-        Yout[i].F2 += Eph0.AX * (tau * tau) / 2;
-        Yout[i].F3 += Eph0.AX * (tau * tau) / 2;
+        Yout[i].X += Eph0.AX * (tau * tau) / (double)2;
+        Yout[i].Y += Eph0.AY * (tau * tau) / (double)2;
+        Yout[i].Z += Eph0.AZ * (tau * tau) / (double)2;
 
-        Yout[i].F4 += Eph0.AX * tau;
-        Yout[i].F5 += Eph0.AX * tau;
-        Yout[i].F6 += Eph0.AX * tau;
+        Yout[i].VX += Eph0.AX * tau;
+        Yout[i].VY += Eph0.AY * tau;
+        Yout[i].VZ += Eph0.AZ * tau;
 
-        tau += h;
+        tau += (double)h;
     }
 
-    FILE *data_out_f;
-    if ((data_out_f = fopen("../data_out.txt","wb")) == NULL) {
-        perror("Error. Problem with out file\n");
-    }
-    else {
-        for(i = 1; i <= N; i++){
-            fprintf(data_out_f,"%e %e %e %e %e %e\n", Yout[i].F1, Yout[i].F2, Yout[i].F3, Yout[i].F4, Yout[i].F5, Yout[i].F6);
+    write_struct_Y(Yout, N, "../source/data_out.txt");
+
+    // TEST
+    bool test_enable = 0;
+
+    if (test_enable) {
+        struct Y_s *Y_model;
+        Y_model = new struct Y_s[N];
+
+        read_struct_Y(Y_model, N, "../source/Matlab_data_for_h1.txt");
+
+        struct Y_s *Y_delta;
+        Y_delta = new struct Y_s[N];
+
+        double delta[N];
+
+        for (i = 0; i <= N; i++) {
+            Y_delta[i].X = Yout[i].X - Y_model[i].X;
+            Y_delta[i].Y = Yout[i].Y - Y_model[i].Y;
+            Y_delta[i].Z = Yout[i].Z - Y_model[i].Z;
+
+            delta[i] = sqrt( Y_delta[i].X*Y_delta[i].X + Y_delta[i].Y*Y_delta[i].Y + Y_delta[i].Z*Y_delta[i].Z );
         }
-    }
-    fclose(data_out_f);
 
+        // Запись в файл (для матлаба)
+        FILE *data_out_f;
+        if ((data_out_f = fopen("../delta_out.txt","wb")) == NULL) {
+            perror("Error. Problem with out file\n");
+        }
+        else {
+            for(i = 0; i <= N; i++){
+                fprintf(data_out_f,"%.20e\n", delta[i]);
+            }
+        }
+        fclose(data_out_f);
+
+        delete []Y_model;
+        delete []Y_delta;
+    }
+
+    // Очищение памяти
+    delete []Ydec;
+    delete []Yinc;
     delete []Yout;
+
+    return 1;
 }
