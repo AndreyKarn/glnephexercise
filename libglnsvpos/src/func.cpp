@@ -1,7 +1,7 @@
-#include <include/libglnsvpos/func.h>
-#include <include/libglnsvpos/glnsvpos.h>
-#include <include/libglnsvpos/rungekutta.h>
-#include <include/libglnsvpos/structures.h>
+#include <func.h>
+#include <glnsvpos.h>
+#include <rungekutta.h>
+#include <structures.h>
 
 using namespace std;
 

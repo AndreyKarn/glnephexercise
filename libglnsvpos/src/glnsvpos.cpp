@@ -1,7 +1,7 @@
-#include <include/libglnsvpos/func.h>
-#include <include/libglnsvpos/glnsvpos.h>
-#include <include/libglnsvpos/rungekutta.h>
-#include <include/libglnsvpos/structures.h>
+#include <func.h>
+#include <glnsvpos.h>
+#include <rungekutta.h>
+#include <structures.h>
 
 using namespace std;
 
@@ -127,42 +127,42 @@ int glnsvpos(bool RK_valid, double h) {
     write_struct_Y(Yout, N, "../source/data_out.txt");
 
     // TEST
-    bool test_enable = 0;
+//    bool test_enable = 0;
 
-    if (test_enable) {
-        struct Y_s *Y_model;
-        Y_model = new struct Y_s[N];
+//    if (test_enable) {
+//        struct Y_s *Y_model;
+//        Y_model = new struct Y_s[N];
 
-        read_struct_Y(Y_model, N, "../source/Matlab_data_for_h1.txt");
+//        read_struct_Y(Y_model, N, "../source/Matlab_data_for_h1.txt");
 
-        struct Y_s *Y_delta;
-        Y_delta = new struct Y_s[N];
+//        struct Y_s *Y_delta;
+//        Y_delta = new struct Y_s[N];
 
-        double delta[N];
+//        double delta[N];
 
-        for (i = 0; i <= N; i++) {
-            Y_delta[i].X = Yout[i].X - Y_model[i].X;
-            Y_delta[i].Y = Yout[i].Y - Y_model[i].Y;
-            Y_delta[i].Z = Yout[i].Z - Y_model[i].Z;
+//        for (i = 0; i <= N; i++) {
+//            Y_delta[i].X = Yout[i].X - Y_model[i].X;
+//            Y_delta[i].Y = Yout[i].Y - Y_model[i].Y;
+//            Y_delta[i].Z = Yout[i].Z - Y_model[i].Z;
 
-            delta[i] = sqrt( Y_delta[i].X*Y_delta[i].X + Y_delta[i].Y*Y_delta[i].Y + Y_delta[i].Z*Y_delta[i].Z );
-        }
+//            delta[i] = sqrt( Y_delta[i].X*Y_delta[i].X + Y_delta[i].Y*Y_delta[i].Y + Y_delta[i].Z*Y_delta[i].Z );
+//        }
 
-        // Запись в файл (для матлаба)
-        FILE *data_out_f;
-        if ((data_out_f = fopen("../delta_out.txt","wb")) == NULL) {
-            perror("Error. Problem with out file\n");
-        }
-        else {
-            for(i = 0; i <= N; i++) {
-                fprintf(data_out_f,"%.15e\n", delta[i]);
-            }
-        }
-        fclose(data_out_f);
+//        // Запись в файл (для матлаба)
+//        FILE *data_out_f;
+//        if ((data_out_f = fopen("../delta_out.txt","wb")) == NULL) {
+//            perror("Error. Problem with out file\n");
+//        }
+//        else {
+//            for(i = 0; i <= N; i++) {
+//                fprintf(data_out_f,"%.15e\n", delta[i]);
+//            }
+//        }
+//        fclose(data_out_f);
 
-        delete []Y_model;
-        delete []Y_delta;
-    }
+//        delete []Y_model;
+//        delete []Y_delta;
+//    }
 
     // Очищение памяти
     delete []Ydec;

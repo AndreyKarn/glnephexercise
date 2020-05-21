@@ -1,5 +1,7 @@
 QT -= gui
 
+INCLUDEPATH += "include/libglnsvpos"
+
 CONFIG += c++11 console
 CONFIG -= app_bundle
 
