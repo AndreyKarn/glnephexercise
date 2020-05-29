@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int glnsvpos(bool RK_valid, double h) {
+uint64_t glnsvpos(bool RK_valid, double h) {
 
     // Class Ephemeris
     struct Ephemeris_s Eph;
@@ -98,18 +98,18 @@ int glnsvpos(bool RK_valid, double h) {
     // if MATLAB array size N, then in C++ N-1
     // -----------------------------------------
 
-    for (i = 0; i <= N2dec; i++) {
-        Yout[i] = Ydec[N2dec-i];
+    for (i = 0; i < N2dec; i++) {
+        Yout[i] = Ydec[N2dec-i-1];
         //cout << " i = " << i << " N2dec-i = " << N2dec-i << endl;
     }
-    for (i = 0; i <= N2inc; i++) {
+    for (i = 0; i < N2inc; i++) {
         Yout[i+N2dec] = Yinc[i];
         //cout << " i = " << i << " i+N2dec = " << i+N2dec << endl;
     }
 
     // Учет ускорений
     double tau = (double)Toe - (double)tn;
-    for (i = 0; i <= N; i++) {
+    for (i = 0; i < N; i++) {
 
         //cout << "tau = " << tau << endl;
 
@@ -124,50 +124,12 @@ int glnsvpos(bool RK_valid, double h) {
         tau += (double)h;
     }
 
-    write_struct_Y(Yout, N, "../source/data_out.txt");
-
-    // TEST
-//    bool test_enable = 0;
-
-//    if (test_enable) {
-//        struct Y_s *Y_model;
-//        Y_model = new struct Y_s[N];
-
-//        read_struct_Y(Y_model, N, "../source/Matlab_data_for_h1.txt");
-
-//        struct Y_s *Y_delta;
-//        Y_delta = new struct Y_s[N];
-
-//        double delta[N];
-
-//        for (i = 0; i <= N; i++) {
-//            Y_delta[i].X = Yout[i].X - Y_model[i].X;
-//            Y_delta[i].Y = Yout[i].Y - Y_model[i].Y;
-//            Y_delta[i].Z = Yout[i].Z - Y_model[i].Z;
-
-//            delta[i] = sqrt( Y_delta[i].X*Y_delta[i].X + Y_delta[i].Y*Y_delta[i].Y + Y_delta[i].Z*Y_delta[i].Z );
-//        }
-
-//        // Запись в файл (для матлаба)
-//        FILE *data_out_f;
-//        if ((data_out_f = fopen("../delta_out.txt","wb")) == NULL) {
-//            perror("Error. Problem with out file\n");
-//        }
-//        else {
-//            for(i = 0; i <= N; i++) {
-//                fprintf(data_out_f,"%.15e\n", delta[i]);
-//            }
-//        }
-//        fclose(data_out_f);
-
-//        delete []Y_model;
-//        delete []Y_delta;
-//    }
+    write_struct_Y(Yout, N, "data_out.txt");
 
     // Очищение памяти
-    delete []Ydec;
-    delete []Yinc;
-    delete []Yout;
+//    delete []Yout;
+//    delete []Ydec;
+//    delete []Yinc;
 
-    return 1;
+    return N;
 }

@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "structures.h"
+#include "func.h"
 
 Y_s* diffs(double tn , struct Y_s Y);
 

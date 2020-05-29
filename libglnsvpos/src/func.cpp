@@ -78,7 +78,7 @@ void write_struct_Y(struct Y_s *Y_data, uint64_t Size, char *fname) {
     // Запись в файл (для матлаба)
     FILE *file;
     if ((file = fopen(fname,"wb")) == NULL) {
-        perror("Error. Problem with file\n");
+        printf("Error. File: %s, Line: %d\n", __FILE__, __LINE__);
     }
     else {
         for(uint32_t i = 0; i <= Size; i++) {
@@ -92,7 +92,7 @@ void read_struct_Y(struct Y_s *Y_data, uint64_t Size, char *fname) {
 
     // Чтение из файла (из матлаба)
 
-    ifstream file(fname);
+    ifstream file("Matlab_data_for_h1.txt");
     if (file.is_open()) { //Если открытие файла прошло успешно
 
         string line; //Строчка текста
@@ -115,7 +115,7 @@ void read_struct_Y(struct Y_s *Y_data, uint64_t Size, char *fname) {
             iss >> Y_data[i].Z;
         }
     }
-    else perror("Error. Problem with file\n");
+    else printf("Error. File: %s, Line: %d\n", __FILE__, __LINE__);
 }
 
 int add(int a, int b) {

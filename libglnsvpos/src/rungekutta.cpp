@@ -41,7 +41,7 @@ int RK(uint32_t N, double h, struct Y_s* Y) {
     struct Y_s *k1, *k2, *k3, *k4, *knextstep;
     struct Y_s Y2, Y3, Y4;
 
-    for (uint32_t k = 1; k <= N; k++)
+    for (uint32_t k = 1; k < N; k++)
     {
         k1 = new struct Y_s;
         k2 = new struct Y_s;
@@ -98,7 +98,6 @@ int RK(uint32_t N, double h, struct Y_s* Y) {
         delete k4;
         delete knextstep;
     }
-
     return 0;
 }
 
