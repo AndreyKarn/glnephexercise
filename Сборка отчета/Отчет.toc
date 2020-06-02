@@ -1,0 +1,23 @@
+\babel@toc {russian}{}
+\contentsline {section}{\numberline {1}Введение}{3}%
+\contentsline {section}{\numberline {2}Этап 1.Использование сторонних средств}{4}%
+\contentsline {subsection}{\numberline {2.1}Задание на этап №1}{4}%
+\contentsline {subsection}{\numberline {2.2}Работа с бинарным файлом}{4}%
+\contentsline {subsubsection}{\numberline {2.2.1}Использование RTKNAVI}{4}%
+\contentsline {subsubsection}{\numberline {2.2.2}Использование rtkconv}{5}%
+\contentsline {subsection}{\numberline {2.3}Получение Sky View}{7}%
+\contentsline {subsection}{\numberline {2.4}Заключение по первому этапу}{7}%
+\contentsline {section}{\numberline {3}Этап 2. Моделирование}{9}%
+\contentsline {subsection}{\numberline {3.1}Задание на этап №2}{9}%
+\contentsline {subsection}{\numberline {3.2}Теоретическая информация для расчета}{9}%
+\contentsline {subsection}{\numberline {3.3}Практическая реализация}{10}%
+\contentsline {subsection}{\numberline {3.4}Результат работы}{12}%
+\contentsline {subsection}{\numberline {3.5}Заключение по второму этапу.}{13}%
+\contentsline {section}{\numberline {4}Этап 3.Реализация}{15}%
+\contentsline {subsection}{\numberline {4.1}Задание на этап №3}{15}%
+\contentsline {subsection}{\numberline {4.2}Подготовка к работе}{15}%
+\contentsline {subsection}{\numberline {4.3}Практическая реализация}{15}%
+\contentsline {subsection}{\numberline {4.4}Результат работы}{16}%
+\contentsline {subsection}{\numberline {4.5}Заключение по третьему этапу.}{18}%
+\contentsline {section}{\numberline {5}Общие выводы}{19}%
+\contentsline {section}{{\cyrillictext \CYRL \cyri \cyrt \cyre \cyrr \cyra \cyrt \cyru \cyrr \cyra }}{20}%

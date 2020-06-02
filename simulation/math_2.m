@@ -32,8 +32,8 @@ elseif(te>time_start&&te<time_final)
         result_after=nan(length(t_after),6);
         result_after(1,:)=[xa,ya,za,vxa,vya,vza]; 
         result_after=RungKUTT( t_after, result_after, dt ); 
-   
-       
+            %result_after(1:10,1)
+       result_before(1:10,1)
     %соединяем
        result=[result_before;result_after];
         t=[t_before t_after];

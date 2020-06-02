@@ -1,0 +1,7 @@
+\babel@toc {russian}{}
+\contentsline {section}{\numberline {1}Задание на этап №3}{3}%
+\contentsline {section}{\numberline {2}Подготовка к работе}{3}%
+\contentsline {section}{\numberline {3}Практическая реализация}{3}%
+\contentsline {section}{\numberline {4}Результат работы}{4}%
+\contentsline {section}{\numberline {5}Выводы}{5}%
+\contentsline {section}{{\cyrillictext \CYRL \cyri \cyrt \cyre \cyrr \cyra \cyrt \cyru \cyrr \cyra }}{6}%

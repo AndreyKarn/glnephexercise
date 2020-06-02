@@ -1,0 +1,33 @@
+# depslib dependency file v1.0
+1591060047 source:c:\users\lenaw\desktop\kp_nap\glnephexercise\libglnsvpos\trynotcry\main.cpp
+	<iostream>
+	<vector>
+	<array>
+	<math.h>
+	<fstream>
+
+1591055521 source:c:\users\lenaw\desktop\kp_nap\glnephexercise\libglnsvpos\trynotcry\f.cpp
+	<math.h>
+	<iostream>
+	<stdio.h>
+
+1591051556 source:c:\users\lenaw\desktop\kp_nap\glnephexercise\libglnsvpos\trynotcry\rungekutt.cpp
+	<math.h>
+	<iostream>
+	<iostream>
+	<vector>
+	<array>
+	<math.h>
+
+1591043416 source:c:\users\lenaw\desktop\kp_nap\glnephexercise\libglnsvpos\trynotcry\times.cpp
+	<iostream>
+	<vector>
+	<array>
+	<math.h>
+
+1591058692 source:c:\users\lenaw\desktop\kp_nap\glnephexercise\libglnsvpos\trynotcry\math_2.cpp
+	<iostream>
+	<vector>
+	<array>
+	<math.h>
+

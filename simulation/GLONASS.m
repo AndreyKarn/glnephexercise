@@ -54,6 +54,13 @@ Jsm_x=ax*cos(S)-ay*sin(S);
 Jsm_y=ax*sin(S)+ay*cos(S);
 Jsm_z=az;
 
+%% загрузка данных Этап 3
+X_trynotcry = load('INERT_x.txt');
+Y_trynotcry = load('INERT_y.txt');
+Z_trynotcry = load('INERT_z.txt');
+PZ_X_trynotcry = load('PZ_x.txt');
+PZ_Y_trynotcry = load('PZ_y.txt');
+PZ_Z_trynotcry = load('PZ_z.txt');
 %%
 %веселуха
 
@@ -69,6 +76,7 @@ figure (1)
 surf(EAR_x,EAR_y,EAR_z)
 hold on
 grid on
+plot3(X_trynotcry,Y_trynotcry,Z_trynotcry) 
 plot3(coordinat(:,1),coordinat(:,2),coordinat(:,3))
 title('Траектория КА в инерциальной СК')
 xlabel('x,m')
@@ -91,6 +99,7 @@ figure (2)
 surf(EAR_x,EAR_y,EAR_z)
 hold on
 grid on
+plot3(PZ_X_trynotcry,PZ_Y_trynotcry,PZ_Z_trynotcry)
 plot3(x_pz,y_pz,z_pz)
 title('Траектория КА в СК ПЗ-90')
 xlabel('x,m')
