@@ -1,32 +1,24 @@
-%% Система дифф уравнений
-function dres = diffs(t, res)
-%% Константы
+function dF = diffs(t, F)
+%константы
+GM = 398600441.8e6;
 J02 = -1082.63*10^-6;
-ae = 6378136; 
-GM = 398600441.8e6; 
-%% Расчет
-Xate=res(1);
-Yate=res(2);
-Zate=res(3);
-r=sqrt(Xate^2 + Yate^2 + Zate^2);
-GM1 = GM/r^2;
-x01 = Xate/r;
-y01 = Yate/r;
-z01 = Zate/r;
-p = ae/r;
- 
-dres = res(:);
-dres(1) = res(4);
-dres(2) = res(5);
-dres(3) = res(6);
- 
-dres(4) = -GM1*x01 + 1.5*J02*GM1*x01*(p^2)*(1 - 5*z01^2);
-dres(5) = -GM1*y01 + 1.5*J02*GM1*y01*(p^2)*(1 - 5*z01^2);
-dres(6) = -GM1*z01 + 1.5*J02*GM1*z01*(p^2)*(3 - 5*z01^2);
+ae = 6378136;
+%расчет
+Xa=F(1);
+Ya=F(2);
+Za=F(3);
+r=sqrt(Xa^2 + Ya^2 + Za^2);
+GMn = GM/r^2;
+x1 = Xa/r;
+y1 = Ya/r;
+z1 = Za/r;
+RO = ae/r;
+dF = F(:);
+dF(1) = F(4);
+dF(2) = F(5);
+dF(3) = F(6); 
+dF(4) = -GMn*x1 + 1.5*J02*GMn*x1*(RO^2)*(1 - 5*z1^2);
+dF(5) = -GMn*y1 + 1.5*J02*GMn*y1*(RO^2)*(1 - 5*z1^2);
+dF(6) = -GMn*z1 + 1.5*J02*GMn*z1*(RO^2)*(3 - 5*z1^2);
 end
-
-
-
-
-
 
